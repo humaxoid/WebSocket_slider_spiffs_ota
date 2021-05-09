@@ -19,13 +19,8 @@ bool ledState1 = 0;
 bool ledState2 = 0;
 
 // Notify customers about the current status of the LED
-void notifyClients1() {
-  ws.textAll(String(ledState1));
-}
-
-void notifyClients2() {
-  ws.textAll(String(ledState2));
-}
+void notifyClients1() {ws.textAll(String(ledState1)); }
+void notifyClients2() {ws.textAll(String(ledState2+2)); }
 
 /* функция обратного вызова, которая запускается всякий раз, когда мы получаем новые
   данные от клиентов по протоколу WebSocket. Если мы получаем сообщение “toggle”, мы
