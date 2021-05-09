@@ -17,10 +17,8 @@ AsyncWebSocket ws("/ws");
 
 bool ledState1 = 0;
 bool ledState2 = 0;
-const int ledPin1 = 32;
-const int ledPin2 = 33;
 
-// Уведомляем клиентов о текущем состоянии светодиода
+// Notify customers about the current status of the LED
 void notifyClients1() {
   ws.textAll(String(ledState1));
 }
@@ -100,10 +98,10 @@ void setup() {
   // Serial port for debugging purposes
   Serial.begin(115200);
 
-  pinMode(ledPin1, OUTPUT);
-  digitalWrite(ledPin1, LOW);
-  pinMode(ledPin2, OUTPUT);
-  digitalWrite(ledPin2, LOW);
+  pinMode(32, OUTPUT);
+  digitalWrite(32, LOW);
+  pinMode(33, OUTPUT);
+  digitalWrite(33, LOW);
 
   // Настраиваем статический IP-адрес:
   if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
@@ -146,6 +144,6 @@ void setup() {
 
 void loop() {
   ws.cleanupClients();
-  digitalWrite(ledPin1, ledState1);
-  digitalWrite(ledPin2, ledState2);
+  digitalWrite(32, ledState1);
+  digitalWrite(33, ledState2);
 }
