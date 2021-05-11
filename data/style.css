@@ -1,43 +1,43 @@
 html {
   font-family: Arial, Helvetica, sans-serif;
-  text-align: center;
+  text-align: center;  /* центровка кнопок внутри рамки */
 }
 h1 {
-  font-size: 1.8rem;
-  color: white;
+  font-size: 1.8rem;  /*размер шрифта заголовка "ESP WebSocket Server**/
+  color: white;       /*цвет шрифта заголовка "ESP WebSocket Server" */
 }
 h2{
-  font-size: 1.5rem;
+  font-size: 1.3rem;  /*размер шрифта Out-GPIO хх*/
   font-weight: bold;
-  color: #143642;
+  color: #143642;     /*цвет шрифта Out-GPIO хх*/
 }
 .topnav {
   overflow: hidden;
-  background-color: #143642;
+  background-color: #3f07db; /*цвет рамки надписи "ESP WebSocket Server*/
 }
 body {
   margin: 0;
 }
 .content {
-  padding: 30px;
-  max-width: 600px;
+  padding: 30px;     /* расстояние между заголовком и рамкой*/
+  max-width: 600px;  /* ширина рамки*/
   margin: 0 auto;
 }
 .card {
-  background-color: #F8F7F9;;
+  background-color: #F8F7F9; /* цвет рамки*/
   box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
-  padding-top:10px;
-  padding-bottom:20px;
+  padding-top:10px;     /* отступ от первой кнопки до верхнего края рамки*/
+  padding-bottom:20px;  /* отступ от последней кнопки до нижнего края рамки*/
 }
 .button {
-  padding: 15px 50px;
-  font-size: 24px;
-  text-align: center;
+  padding: 8px 23px;   /*высота и ширина кнопки*/
+  font-size: 24px;      /*размер шрифта кнопки (размер кнопки адаптируется под размер шрифта)*/
+  text-align: center;   /*центровка надписи внутри кнопки*/
   outline: none;
-  color: #fff;
-  background-color: #0f8b8d;
+  color: #fff;                 /*цвет шрифта в кнопке*/
+  background-color: #0f8b8d;   /*цвет кнопки*/
   border: none;
-  border-radius: 5px;
+  border-radius: 5px;          /*радиус закругления углов кнопки*/
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -46,14 +46,14 @@ body {
   user-select: none;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
  }
- /*.button:hover {background-color: #0f8b8d}*/
+/*  button:hover {background-color: #6b0f8c} /* Цвет кнопки при наведении */
  .button:active {
    background-color: #0f8b8d;
    box-shadow: 2 2px #CDCDCD;
    transform: translateY(2px);
  }
  .state {
-   font-size: 1.5rem;
-   color:#8c8c8c;
+   font-size: 1.0rem; /* размер шрифта статуса кнопки */
+   color:#8c8c8c;     /* цвет активной кнопки*/
    font-weight: bold;
  }
