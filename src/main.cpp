@@ -7,11 +7,11 @@
 // Network settings
 const char* ssid = "uname";
 const char* password = "pass";
-IPAddress local_IP(192, 168, 1, 6);    // Задаем статический IP-адрес:
-IPAddress gateway(192, 168, 1, 1);     // Задаем IP-адрес сетевого шлюза:
-IPAddress subnet(255, 255, 255, 0);    // Задаем маску сети:
-IPAddress primaryDNS(8, 8, 8, 8);      // Основной ДНС (опционально)
-IPAddress secondaryDNS(8, 8, 4, 4);    // Резервный ДНС (опционально)
+IPAddress local_IP(192, 168, 1, 68);   // Static local IP
+IPAddress gateway(192, 168, 1, 1);     // Gateway
+IPAddress subnet(255, 255, 255, 0);    // MASK
+IPAddress primaryDNS(8, 8, 8, 8);      // Primary DNS
+IPAddress secondaryDNS(8, 8, 4, 4);    // Secondary DNS
 
 bool ledState1 = 0;
 bool ledState2 = 0;
@@ -21,39 +21,54 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // Notify clients about the current status of the LED
-void notifyClients1() {ws.textAll(String(ledState1));}
-void notifyClients2() {ws.textAll(String(ledState2+2));}
-void notifyClients3() {ws.textAll(String(ledState3+4));}
-  
+void notifyClients1() {
+  ws.textAll(String(ledState1));
+}
+void notifyClients2() {
+  ws.textAll(String(ledState2 + 2));
+}
+void notifyClients3() {
+  ws.textAll(String(ledState3 + 4));
+}
+
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
-      if (strcmp((char*)data, "toggle1") == 0) {ledState1 = !ledState1; notifyClients1();} 
-      if (strcmp((char*)data, "toggle2") == 0) {ledState2 = !ledState2; notifyClients2();}
-	  if (strcmp((char*)data, "toggle3") == 0) {ledState3 = !ledState3; notifyClients3();}
+    if (strcmp((char*)data, "toggle1") == 0) {
+      ledState1 = !ledState1;
+      notifyClients1();
+    }
+    if (strcmp((char*)data, "toggle2") == 0) {
+      ledState2 = !ledState2;
+      notifyClients2();
+    }
+    if (strcmp((char*)data, "toggle3") == 0) {
+      ledState3 = !ledState3;
+      notifyClients3();
+    }
   }
 }
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
              void *arg, uint8_t *data, size_t len) {
   switch (type) {
-    case WS_EVT_CONNECT:                 
+    case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
       break;
-    case WS_EVT_DISCONNECT:              
+    case WS_EVT_DISCONNECT:
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       break;
-    case WS_EVT_DATA:                    
+    case WS_EVT_DATA:
       handleWebSocketMessage(arg, data, len);
       break;
-    case WS_EVT_PONG:                    
-    case WS_EVT_ERROR:                   
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
       break;
   }
 }
 
-// Инициализация WebSocket
+// Initialization WebSocket
 void initWebSocket() {
   ws.onEvent(onEvent);
   server.addHandler(&ws);
@@ -61,9 +76,27 @@ void initWebSocket() {
 
 String processor(const String& var) {
   Serial.println(var);
-  if (var == "STATE1") {if (ledState1) {return "ON";}else {return "OFF";}}
-  if (var == "STATE2") {if (ledState2) {return "ON";}else {return "OFF";}}
-  if (var == "STATE3") {if (ledState3) {return "ON";}else {return "OFF";}}
+  if (var == "STATE1") {
+    if (ledState1) {
+      return "ON";
+    } else {
+      return "OFF";
+    }
+  }
+  if (var == "STATE2") {
+    if (ledState2) {
+      return "ON";
+    } else {
+      return "OFF";
+    }
+  }
+  if (var == "STATE3") {
+    if (ledState3) {
+      return "ON";
+    } else {
+      return "OFF";
+    }
+  }
 }
 
 void setup() {
@@ -95,7 +128,7 @@ void setup() {
 
   initWebSocket();
 
- // Route for root / web page
+  // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.html", "text/html");
   });
@@ -105,7 +138,7 @@ void setup() {
   });
 
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-   request->send(SPIFFS, "/script.js", "text/javascript");
+    request->send(SPIFFS, "/script.js", "text/javascript");
   });
 
   // Start server
