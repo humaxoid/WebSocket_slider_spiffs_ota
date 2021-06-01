@@ -1,28 +1,63 @@
 <!DOCTYPE HTML><html>
 <head>
-  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <title>ESP IOT DASHBOARD</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,">
-  <title>ESP Web Server</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="icon"  type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
   <div class="topnav">
-    <h1>ESP WebSocket Server</h1>
+    <h1>ESP WEB SERVER - Control Multiple Outputs WebSocket</h1>
   </div>
   <div class="content">
-    <div class="card">
-      <h2>Out - GPIO 32</h2>
-      <p class="state">Status: <span id="state1">%STATE1%</span></p>
-      <p><button id="button1" class="button">Button 1</button></p>  
-	  <h2>Out - GPIO 33</h2>
-      <p class="state">Status: <span id="state2">%STATE2%</span></p>
-      <p><button id="button2" class="button">Button 2</button></p>
-	  <h2>Out - GPIO 25</h2>
-      <p class="state">Status: <span id="state3">%STATE3%</span></p>
-      <p><button id="button3" class="button">Button 3</button></p>
+    <div class="card-grid">
+        <div class="card">             
+            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 32</p>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleCheckbox(this)" id="32">
+                <span class="slider"></span>
+            </label>
+            <p class ="state">State: <span id="32s"></span></p>
+        </div>
+        <div class="card">
+            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 33</p>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleCheckbox(this)" id="33">
+                <span class="slider"></span>
+            </label>
+            <p class ="state">State: <span id="33s"></span></p>
+        </div>
+        <div class="card">
+            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 25</p>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleCheckbox(this)" id="25">
+                <span class="slider"></span>
+            </label>
+            <p class ="state">State: <span id="25s"></span></p>
+        </div>
+        <div class="card">
+            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 26</p>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleCheckbox(this)" id="26">
+                <span class="slider"></span>
+            </label>
+            <p class="state">State: <span id="26s"></span></p>
+        </div>
+		  <div class="content">
+    <div class="card-grid">
+        <div class="card">             
+            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 27</p>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleCheckbox(this)" id="27">
+                <span class="slider"></span>
+            </label>
+            <p class ="state">State: <span id="27s"></span></p>
+        </div>
     </div>
-  </div>
+</div>
+<script src="/script.js"></script>
 </body>
 </html>
+
+

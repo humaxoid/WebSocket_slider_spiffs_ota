@@ -1,56 +1,78 @@
-// Import required libraries for ESP32
+// Импортируем библиотеки
+#include <Arduino.h>
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <SPIFFS.h>
-
-// Network settings
-const char* ssid = "uname";
-const char* password = "pass";
-IPAddress local_IP(192, 168, 1, 68);   // Static local IP
-IPAddress gateway(192, 168, 1, 1);     // Gateway
-IPAddress subnet(255, 255, 255, 0);    // MASK
-IPAddress primaryDNS(8, 8, 8, 8);      // Primary DNS
-IPAddress secondaryDNS(8, 8, 4, 4);    // Secondary DNS
-
-bool ledState1 = 0;
-bool ledState2 = 0;
-bool ledState3 = 0;
-
+#include "SPIFFS.h"
+#include <Arduino_JSON.h>
+#include <AsyncElegantOTA.h>
+ 
+// Замените на свой учетные данные сети
+const char* ssid = "***";
+const char* password = "******";
+ 
+// Создаем сервер через 80 порт
 AsyncWebServer server(80);
+ 
+// Создаем объект WebSocket
 AsyncWebSocket ws("/ws");
-
-// Notify clients about the current status of the LED
-void notifyClients1() {
-  ws.textAll(String(ledState1));
+ 
+// Указываем количество выходов
+#define NUM_OUTPUTS  5
+ 
+// Присваиваем каждому GPIO свой выход
+int outputGPIOs[NUM_OUTPUTS] = {32, 33, 25, 26, 27};
+ 
+// Запускаем SPIFFS
+void initSPIFFS() {
+  if (!SPIFFS.begin(true)) {
+    Serial.println("An error has occurred while mounting SPIFFS");
+  }
+  Serial.println("SPIFFS mounted successfully");
 }
-void notifyClients2() {
-  ws.textAll(String(ledState2 + 2));
+ 
+// Запускаем WiFi
+void initWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
+  }
+  Serial.println(WiFi.localIP());
 }
-void notifyClients3() {
-  ws.textAll(String(ledState3 + 4));
+ 
+String getOutputStates(){
+  JSONVar myArray;
+  for (int i =0; i<NUM_OUTPUTS; i++){
+    myArray["gpios"][i]["output"] = String(outputGPIOs[i]);
+    myArray["gpios"][i]["state"] = String(digitalRead(outputGPIOs[i]));
+  }
+  String jsonString = JSON.stringify(myArray);
+  return jsonString;
 }
-
+ 
+void notifyClients(String state) {
+  ws.textAll(state);
+}
+ 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
-    if (strcmp((char*)data, "toggle1") == 0) {
-      ledState1 = !ledState1;
-      notifyClients1();
+    if (strcmp((char*)data, "states") == 0) {
+      notifyClients(getOutputStates());
     }
-    if (strcmp((char*)data, "toggle2") == 0) {
-      ledState2 = !ledState2;
-      notifyClients2();
-    }
-    if (strcmp((char*)data, "toggle3") == 0) {
-      ledState3 = !ledState3;
-      notifyClients3();
+    else{
+      int gpio = atoi((char*)data);
+      digitalWrite(gpio, !digitalRead(gpio));
+      notifyClients(getOutputStates());
     }
   }
 }
-
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+ 
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,AwsEventType type,
              void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
@@ -67,87 +89,39 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
       break;
   }
 }
-
-// Initialization WebSocket
+ 
 void initWebSocket() {
-  ws.onEvent(onEvent);
-  server.addHandler(&ws);
+    ws.onEvent(onEvent);
+    server.addHandler(&ws);
 }
-
-String processor(const String& var) {
-  Serial.println(var);
-  if (var == "STATE1") {
-    if (ledState1) {
-      return "ON";
-    } else {
-      return "OFF";
-    }
-  }
-  if (var == "STATE2") {
-    if (ledState2) {
-      return "ON";
-    } else {
-      return "OFF";
-    }
-  }
-  if (var == "STATE3") {
-    if (ledState3) {
-      return "ON";
-    } else {
-      return "OFF";
-    }
-  }
-}
-
-void setup() {
-  // Serial port for debugging purposes
+ 
+void setup(){
+  // Монитор порта для дебага
   Serial.begin(115200);
-
-  pinMode(32, OUTPUT); digitalWrite(32, LOW);
-  pinMode(33, OUTPUT); digitalWrite(33, LOW);
-  pinMode(25, OUTPUT); digitalWrite(25, LOW);
-
-  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-    Serial.println("Client mode could not be configured");
+ 
+  // Назначаем GPIO выходами
+  for (int i =0; i<NUM_OUTPUTS; i++){
+    pinMode(outputGPIOs[i], OUTPUT);
   }
-
-  if (!SPIFFS.begin()) {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  }
-
-  // Connect to Wi-Fi
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
-
-  // Print ESP Local IP Address
-  Serial.println(WiFi.localIP());
-
+  initSPIFFS();
+  initWiFi();
   initWebSocket();
-
-  // Route for root / web page
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/index.html", "text/html");
+ 
+  // Начальная страница
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", "text/html",false);
   });
-
-  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/style.css", "text/css");
-  });
-
-  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/script.js", "text/javascript");
-  });
-
-  // Start server
+ 
+  server.serveStatic("/", SPIFFS, "/");
+ 
+  // Запускаем ElegantOTA
+  AsyncElegantOTA.begin(&server);
+  
+  // Запускаем сервер
   server.begin();
 }
-
+ 
 void loop() {
+  AsyncElegantOTA.loop();
   ws.cleanupClients();
-  digitalWrite(32, ledState1);
-  digitalWrite(33, ledState2);
-  digitalWrite(25, ledState3);
 }

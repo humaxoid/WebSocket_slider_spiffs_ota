@@ -1,59 +1,73 @@
 html {
-  font-family: Arial, Helvetica, sans-serif;
-  text-align: center;  /* центровка кнопок внутри рамки */
+    font-family: Arial, Helvetica, sans-serif; 
+    text-align: center;
 }
 h1 {
-  font-size: 1.8rem;  /*размер шрифта заголовка "ESP WebSocket Server**/
-  color: white;       /*цвет шрифта заголовка "ESP WebSocket Server" */
+    font-size: 1.8rem; 
+    color: white;
 }
-h2{
-  font-size: 1.3rem;  /*размер шрифта Out-GPIO хх*/
-  font-weight: bold;
-  color: #143642;     /*цвет шрифта Out-GPIO хх*/
+.topnav { 
+    overflow: hidden; 
+    background-color: #0A1128;
 }
-.topnav {
-  overflow: hidden;
-  background-color: #3f07db; /*цвет рамки надписи "ESP WebSocket Server*/
+body {  
+    margin: 0;
 }
-body {
-  margin: 0;
+.content { 
+    padding: 50px;
 }
-.content {
-  padding: 30px;     /* расстояние между заголовком и рамкой*/
-  max-width: 600px;  /* ширина рамки*/
-  margin: 0 auto;
+.card-grid { 
+    max-width: 600px; 
+    margin: 0 auto; 
+    display: grid; 
+    gap: 2rem; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
-.card {
-  background-color: #F8F7F9; /* цвет рамки*/
-  box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
-  padding-top:10px;     /* отступ от первой кнопки до верхнего края рамки*/
-  padding-bottom:20px;  /* отступ от последней кнопки до нижнего края рамки*/
+.card { 
+    background-color: white; 
+    box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
 }
-.button {
-  padding: 8px 23px;   /*высота и ширина кнопки*/
-  font-size: 24px;      /*размер шрифта кнопки (размер кнопки адаптируется под размер шрифта)*/
-  text-align: center;   /*центровка надписи внутри кнопки*/
-  outline: none;
-  color: #fff;                 /*цвет шрифта в кнопке*/
-  background-color: #0f8b8d;   /*цвет кнопки*/
-  border: none;
-  border-radius: 5px;          /*радиус закругления углов кнопки*/
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
- }
-/*  button:hover {background-color: #6b0f8c} /* Цвет кнопки при наведении */
- .button:active {
-   background-color: #0f8b8d;
-   box-shadow: 2 2px #CDCDCD;
-   transform: translateY(2px);
- }
- .state {
-   font-size: 1.0rem; /* размер шрифта статуса кнопки */
-   color:#8c8c8c;     /* цвет активной кнопки*/
-   font-weight: bold;
- }
+.card-title { 
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #034078
+}
+.state {
+    font-size: 1.2rem;
+    color:#1282A2;
+}
+.switch {
+    position: relative; 
+    display: inline-block; 
+    width: 120px; 
+    height: 68px
+} 
+.switch input {
+    display: none
+}
+.slider {
+    position: absolute; 
+    top: 0; left: 0; right: 0; bottom: 0; 
+    background-color: #ccc; 
+    border-radius: 50px
+}
+.slider:before {
+    position: absolute; 
+    content: ""; 
+    height: 52px; 
+    width: 52px; 
+    left: 8px; 
+    bottom: 8px; 
+    background-color: #fff; 
+    -webkit-transition: .4s; 
+    transition: .4s;
+    border-radius: 50px;
+}
+input:checked+.slider {
+    background-color: #b30000;
+}
+input:checked+.slider:before {
+    -webkit-transform: translateX(52px);
+    -ms-transform: translateX(52px); 
+    transform: translateX(52px);
+}
